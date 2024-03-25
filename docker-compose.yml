@@ -1,0 +1,47 @@
+version: '3'
+
+
+services:
+  redis-db:
+    image: bitnami/redis
+    container_name: redis_db
+    ports:
+    - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - ALLOW_EMPTY_PASSWORD=no
+    networks:
+      - serv-net
+    volumes:
+      - redis_data:/data
+    restart: always
+
+
+  backend:
+    image: --//--
+    container_name: example
+    ports:
+      - "8081:80"
+    env_file:
+      - .env
+    volumes:
+      - type: bind
+        source: C:\Users\dmitr\RustroverProjects\backend/lighttpd.conf
+        target: /etc/lighttpd/lighttpd.conf
+      - type: bind
+        source: C:\Users\dmitr\RustroverProjects\backend/10-cgi.conf
+        target: /etc/lighttpd/conf-enabled/10-cgi.conf
+    networks:
+      - serv-net
+    depends_on:
+      - redis-db
+
+
+
+volumes:
+  redis_data:
+    name: redis_data
+
+networks:
+  serv-net:
+    name: serv-net
